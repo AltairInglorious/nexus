@@ -38,14 +38,23 @@ transport, err := New(natsUrl, nkeyFile, name)
 // Handle a NATS event
 transport.Handle(event, MapperHandler(dbFn))
 
+// Use filters to modify an SQL query
+query := UseFilter(filter, "SELECT * FROM table")
+
 // Create a new entity in the SurrealDB
 entity, err := GeneralCreate(&DB, thing, data)
 
 // Select an entity from the SurrealDB
 entities, err := GeneralSelect(&DB, selectQuery)
 
-// Use filters to modify an SQL query
-query := UseFilter(filter, "SELECT * FROM table")
+// Update an existing entity in the SurrealDB
+updatedEntity, err := GeneralUpdate(&DB, thing, id, updateData)
+
+// Change an existing entity in the SurrealDB
+changedEntity, err := GeneralChange(&DB, thing, id, changeData)
+
+// Delete an entity from the SurrealDB
+deletedEntity, err := GeneralDelete(&DB, thing, id)
 ```
 
 ### SelectQuery Usage
