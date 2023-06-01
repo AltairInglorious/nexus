@@ -2,6 +2,18 @@
 
 Nexus is a Golang utility package develop by TechLead of Adameus Technologies that helps to map your application models to the messaging system and integrate with a SurrealDB database. This package includes helper functions for handling NATS message brokering, error handling, efficient object pool management, and database interaction.
 
+## NATS + SurrealDB
+
+The adoption of NATS as a message broker for microservices and SurrealDB as a database brings substantial advantages, paramount among which are superior performance and a robust solution for Service Discovery.
+
+NATS stands out in the realm of message brokers due to its lightweight nature and blazingly fast performance. By offering high-speed, low-latency communication between services, NATS ensures your system remains responsive and efficient under high load, outperforming many alternative solutions. Moreover, NATS' publish-subscribe and request-reply models are intuitive and straightforward, simplifying inter-service communication.
+
+Additionally, NATS efficiently addresses the Service Discovery problem often faced in microservice architectures. Since services need to discover and communicate with each other in a dynamic, distributed environment, NATS' intelligent service discovery mechanisms enable services to locate each other seamlessly. Thus, services can dynamically scale, deploy, and recover, thereby increasing the system's resilience and flexibility.
+
+On the other hand, SurrealDB, a multi-model database, brings a unique blend of flexibility and power to your data layer. Unlike traditional databases, SurrealDB allows you to easily define complex data models thanks to its multi-model nature. Whether you're working with document, graph, key-value, or other data structures, SurrealDB lets you handle them all in one database, reducing the complexity of dealing with multiple disparate databases.
+
+Moreover, SurrealDB provides efficient querying, reliable consistency, and horizontal scalability, making it an excellent choice for handling complex, large-scale data requirements. Its user-friendly nature further simplifies database management, allowing developers to focus more on the application logic and less on managing the data layer.
+
 ## Features
 
 - Offers generic `GeneralCreate` and `GeneralSelect` functions to create and select objects from a SurrealDB database respectively.
