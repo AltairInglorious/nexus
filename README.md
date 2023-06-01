@@ -1,6 +1,6 @@
 # Nexus
 
-Nexus is a Golang utility package develop by Adameus Technologies that helps to map your application models to the messaging system and integrate with a SurrealDB database. This package includes helper functions for handling NATS message brokering, error handling, efficient object pool management, and database interaction.
+Nexus is a Golang utility package develop by TechLead of Adameus Technologies that helps to map your application models to the messaging system and integrate with a SurrealDB database. This package includes helper functions for handling NATS message brokering, error handling, efficient object pool management, and database interaction.
 
 ## Features
 
