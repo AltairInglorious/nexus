@@ -71,7 +71,7 @@ sql := q.String()
 
 ## Error Handling
 
-This package uses a sync pool to manage NATSError and NATSOK structs, minimizing allocations and GC pressure.
+This package uses a sync pool to manage NATSError and NATSOk structs, minimizing allocations and GC pressure.
 
 ## Installation
 
