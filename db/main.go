@@ -104,6 +104,13 @@ func (d *DB) clearCache(t string) {
 	})
 }
 
+// GeneralCreate is a generic function that handles the creation of a new record in the database.
+// It takes a thing string which represents the table name, and a map of data for the record.
+// After successfully creating the record, it clears the relevant cache.
+// d: Pointer to DB instance
+// thing: table name in the database
+// data: map containing field-value pairs for the new record
+// Returns a pointer to the created record of type T or an error.
 func GeneralCreate[T any](d *DB, thing string, data map[string]interface{}) (*T, error) {
 	pr, err := d.s.Create(thing, data)
 	if err != nil {
@@ -120,6 +127,12 @@ func GeneralCreate[T any](d *DB, thing string, data map[string]interface{}) (*T,
 	return &p[0], nil
 }
 
+// GeneralSelect is a generic function that handles querying of records from the database.
+// It first checks if the query results are present in the cache. If not, it executes the query and
+// stores the result in cache.
+// d: Pointer to DB instance
+// s: SelectQuery structure which encapsulates the SELECT query details
+// Returns a slice of records of type T or an error.
 func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 	cv, err := d.getQueryFromCache(s)
 	if err == nil {
@@ -146,6 +159,11 @@ func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 	return p, nil
 }
 
+// UseFilter takes an interface and a query string as input and adds WHERE and LIMIT clauses to the query
+// based on the non-nil fields of the interface. It ignores the "limit" field while constructing WHERE clauses.
+// f: Filter interface with optional fields
+// q: Query string to which filters will be appended
+// Returns the modified query string.
 func UseFilter(f interface{}, q string) string {
 	if reflect.ValueOf(f).IsNil() {
 		return q
