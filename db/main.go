@@ -179,11 +179,11 @@ func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 }
 
 // GeneralUpdate is a function that updates an existing entry in the SurrealDB.
-// It takes the DB instance, the name of the object (thing), the id of the object,
+// It takes the DB instance, the id of the object,
 // and a map of the data to be updated. If successful, it returns a pointer to the updated object;
 // otherwise, it returns an error. After updating, it clears related entries from the cache.
-func GeneralUpdate[T any](d *DB, thing string, id int, data map[string]interface{}) (*T, error) {
-	pr, err := d.s.Update(fmt.Sprintf("%s:%d", thing, id), data)
+func GeneralUpdate[T any](d *DB, id string, data map[string]interface{}) (*T, error) {
+	pr, err := d.s.Update(id, data)
 	if err != nil {
 		return nil, err
 	}
@@ -191,16 +191,17 @@ func GeneralUpdate[T any](d *DB, thing string, id int, data map[string]interface
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	d.clearCache(thing)
+	m := strings.Split(id, ":")
+	d.clearCache(m[0])
 	return &p[0], nil
 }
 
 // GeneralChange is a function that changes an existing entry in the SurrealDB.
-// Similar to GeneralUpdate, it takes the DB instance, the name of the object (thing), the id of the object,
+// Similar to GeneralUpdate, it takes the DB instance, the id of the object,
 // and a map of the data to be changed. If successful, it returns a pointer to the changed object;
 // otherwise, it returns an error. After changing, it clears related entries from the cache.
-func GeneralChange[T any](d *DB, thing string, id int, data map[string]interface{}) (*T, error) {
-	pr, err := d.s.Change(fmt.Sprintf("%s:%d", thing, id), data)
+func GeneralChange[T any](d *DB, id string, data map[string]interface{}) (*T, error) {
+	pr, err := d.s.Change(id, data)
 	if err != nil {
 		return nil, err
 	}
@@ -208,16 +209,17 @@ func GeneralChange[T any](d *DB, thing string, id int, data map[string]interface
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	d.clearCache(thing)
+	m := strings.Split(id, ":")
+	d.clearCache(m[0])
 	return &p[0], nil
 }
 
 // GeneralDelete is a function that deletes an existing entry from the SurrealDB.
-// It takes the DB instance, the name of the object (thing), and the id of the object.
+// It takes the DB instance, and the id of the object.
 // If successful, it returns a pointer to the deleted object; otherwise, it returns an error.
 // After deleting, it clears related entries from the cache.
-func GeneralDelete[T any](d *DB, thing string, id int) (*T, error) {
-	pr, err := d.s.Delete(fmt.Sprintf("%s:%d", thing, id))
+func GeneralDelete[T any](d *DB, id string) (*T, error) {
+	pr, err := d.s.Delete(id)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +227,8 @@ func GeneralDelete[T any](d *DB, thing string, id int) (*T, error) {
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	d.clearCache(thing)
+	m := strings.Split(id, ":")
+	d.clearCache(m[0])
 	return &p[0], nil
 }
 
