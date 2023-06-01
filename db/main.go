@@ -14,12 +14,18 @@ type CacheKey struct {
 	Query     string
 }
 
+// SelectQuery represents a structure for generating SQL SELECT queries.
+// TableName is the name of the table in the database.
+// Fields is an optional slice of fields (columns) to be selected. If empty, all fields (*) are selected.
+// Filter is an optional filter to be applied to the query as a WHERE clause.
 type SelectQuery struct {
 	TableName string
 	Fields    []string
 	Filter    any
 }
 
+// String method generates a SQL SELECT query string based on the SelectQuery values.
+// It uses the UseFilter function to add any filter conditions to the query.
 func (s SelectQuery) String() string {
 	var q string
 	if len(s.Fields) == 0 {
@@ -30,17 +36,25 @@ func (s SelectQuery) String() string {
 	return UseFilter(s.Filter, q)
 }
 
+// NewSelectAll is a function that generates a new SelectQuery for selecting all fields from a specific table.
+// It accepts the table name as an argument.
 func NewSelectAll(t string) SelectQuery {
 	return SelectQuery{
 		TableName: t,
 	}
 }
+
+// NewSelect is a function that generates a new SelectQuery for selecting specific fields from a specific table.
+// It accepts the table name as the first argument and a variable number of string arguments for the fields.
 func NewSelect(t string, f ...string) SelectQuery {
 	return SelectQuery{
 		TableName: t,
 		Fields:    f,
 	}
 }
+
+// WithFilter is a method that adds a filter to the SelectQuery and returns the updated SelectQuery.
+// It accepts an interface{} as a filter which can be any type that is acceptable by the UseFilter function.
 func (s SelectQuery) WithFilter(f any) SelectQuery {
 	if f == nil {
 		return s
@@ -49,11 +63,16 @@ func (s SelectQuery) WithFilter(f any) SelectQuery {
 	return s
 }
 
+// DB represents a wrapper over surrealdb.DB that includes a concurrent map for caching purposes.
 type DB struct {
 	s *surrealdb.DB
 	c sync.Map
 }
 
+// New is a function that creates a new instance of DB.
+// It establishes a connection to the SurrealDB with the provided URL and credentials,
+// then switches to the specified namespace and database.
+// If successful, it returns a pointer to the DB instance; otherwise, it returns an error.
 func New(url, user, pass, ns, db string) (*DB, error) {
 	s, err := surrealdb.New(url)
 	if err != nil {
