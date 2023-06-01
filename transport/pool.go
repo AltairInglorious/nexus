@@ -23,5 +23,5 @@ func (t *Transport) getOkFromPool(status int, body any) *NATSOk {
 func (t *Transport) returnOkToPool(o *NATSOk) {
 	o.Status = 0
 	o.Body = nil
-	t.errPool.Put(o)
+	t.okPool.Put(o)
 }
