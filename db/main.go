@@ -178,6 +178,57 @@ func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 	return p, nil
 }
 
+// GeneralUpdate is a function that updates an existing entry in the SurrealDB.
+// It takes the DB instance, the name of the object (thing), the id of the object,
+// and a map of the data to be updated. If successful, it returns a pointer to the updated object;
+// otherwise, it returns an error. After updating, it clears related entries from the cache.
+func GeneralUpdate[T any](d *DB, thing string, id int, data map[string]interface{}) (*T, error) {
+	pr, err := d.s.Update(fmt.Sprintf("%s:%d", thing, id), data)
+	if err != nil {
+		return nil, err
+	}
+	p := make([]T, 1)
+	if err = surrealdb.Unmarshal(pr, &p); err != nil {
+		return nil, err
+	}
+	d.clearCache(thing)
+	return &p[0], nil
+}
+
+// GeneralChange is a function that changes an existing entry in the SurrealDB.
+// Similar to GeneralUpdate, it takes the DB instance, the name of the object (thing), the id of the object,
+// and a map of the data to be changed. If successful, it returns a pointer to the changed object;
+// otherwise, it returns an error. After changing, it clears related entries from the cache.
+func GeneralChange[T any](d *DB, thing string, id int, data map[string]interface{}) (*T, error) {
+	pr, err := d.s.Change(fmt.Sprintf("%s:%d", thing, id), data)
+	if err != nil {
+		return nil, err
+	}
+	p := make([]T, 1)
+	if err = surrealdb.Unmarshal(pr, &p); err != nil {
+		return nil, err
+	}
+	d.clearCache(thing)
+	return &p[0], nil
+}
+
+// GeneralDelete is a function that deletes an existing entry from the SurrealDB.
+// It takes the DB instance, the name of the object (thing), and the id of the object.
+// If successful, it returns a pointer to the deleted object; otherwise, it returns an error.
+// After deleting, it clears related entries from the cache.
+func GeneralDelete[T any](d *DB, thing string, id int) (*T, error) {
+	pr, err := d.s.Delete(fmt.Sprintf("%s:%d", thing, id))
+	if err != nil {
+		return nil, err
+	}
+	p := make([]T, 1)
+	if err = surrealdb.Unmarshal(pr, &p); err != nil {
+		return nil, err
+	}
+	d.clearCache(thing)
+	return &p[0], nil
+}
+
 // UseFilter takes an interface and a query string as input and adds WHERE and LIMIT clauses to the query
 // based on the non-nil fields of the interface. It ignores the "limit" field while constructing WHERE clauses.
 // f: Filter interface with optional fields
