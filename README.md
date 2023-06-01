@@ -4,15 +4,24 @@ Nexus is a Golang utility package develop by Adameus Technologies that helps to 
 
 ## Features
 
-Create, Read operations on the Database: GeneralCreate and GeneralSelect helper functions provide abstraction over create and select operations with SurrealDB.
+- Offers generic `GeneralCreate` and `GeneralSelect` functions to create and select objects from a SurrealDB database respectively.
+- Provides a generic `UseFilter` function to generate dynamic SQL queries based on input struct fields and conditions.
+- Offers a reusable `MapperHandler` function to handle incoming NATS messages and map them to database actions.
+- Uses object pooling to efficiently handle and recycle NATS messages for lower GC pressure and higher performance.
+- Provides the `SelectQuery` struct for flexible and dynamic query generation.
 
-1. **Message Mapping**: MapperHandler function provides a way to map DB models to a message broker.
+The `SelectQuery` struct is a convenient helper for generating SQL queries. It includes:
 
-1. **NATS Subscription Handler**: Handle function provides a way to subscribe to a NATS event with error handling and response management.
+- `TableName` - The name of the database table.
+- `Fields` - The list of fields to select. If empty, it selects all fields (\*).
+- `Filter` - An optional filter for query conditions.
 
-1. **NATS Connection**: New function creates a new NATS connection with a given URL, name, and NKEY seed file.
+Here are few methods that are attached to the `SelectQuery` struct:
 
-1. **Dynamic Query Building**: UseFilter function helps to dynamically build SQL queries based on the provided filter struct.
+- `String()` - Converts the `SelectQuery` struct to an actual SQL string.
+- `NewSelectAll(string)` - Returns a `SelectQuery` struct for selecting all fields from the provided table.
+- `NewSelect(string, ...string)` - Returns a `SelectQuery` struct for selecting specific fields from the provided table.
+- `WithFilter(any)` - Returns a `SelectQuery` struct with the provided filter.
 
 ## Documentation
 
@@ -20,7 +29,9 @@ Detailed in-line comments have been provided for each function in the codebase, 
 
 ## Usage
 
-```
+### Basic Usage
+
+```go
 // Create a new NATS transport
 transport, err := New(natsUrl, nkeyFile, name)
 
@@ -35,6 +46,27 @@ entities, err := GeneralSelect(&DB, selectQuery)
 
 // Use filters to modify an SQL query
 query := UseFilter(filter, "SELECT * FROM table")
+```
+
+### SelectQuery Usage
+
+To use **`SelectQuery`**, create a new query using **`NewSelectAll`** or **`NewSelect`**. You can then optionally add a filter using **`WithFilter`**.
+
+```go
+// Create a select all query for the 'users' table
+q := NewSelectAll("users")
+
+// Create a select query for 'id' and 'name' fields in the 'users' table
+q := NewSelect("users", "id", "name")
+
+// Add a filter to the query
+q = q.WithFilter(UserFilter{IsActive: true})
+```
+
+Use the **`String`** method to convert the **`SelectQuery`** struct to an actual SQL string:
+
+```go
+sql := q.String()
 ```
 
 ## Error Handling
