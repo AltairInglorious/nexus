@@ -1,7 +1,5 @@
 package transport
 
-import "github.com/go-playground/validator"
-
 func (t *Transport) getErrorFromPool(status int, errMsg string) *NATSError {
 	err := t.errPool.Get().(*NATSError)
 	err.Status = status
@@ -26,13 +24,4 @@ func (t *Transport) returnOkToPool(o *NATSOk) {
 	o.Status = 0
 	o.Body = nil
 	t.errPool.Put(o)
-}
-
-func getValidatorFromPool() *validator.Validate {
-	v := vdPool.Get().(*validator.Validate)
-	return v
-}
-
-func putValidatorToPool(v *validator.Validate) {
-	vdPool.Put(v)
 }
