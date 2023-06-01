@@ -50,7 +50,7 @@ query := UseFilter(filter, "SELECT * FROM table")
 
 ### SelectQuery Usage
 
-To use **`SelectQuery`**, create a new query using **`NewSelectAll`** or **`NewSelect`**. You can then optionally add a filter using **`WithFilter`**.
+To use `SelectQuery`, create a new query using `NewSelectAll` or `NewSelect`. You can then optionally add a filter using `WithFilter`.
 
 ```go
 // Create a select all query for the 'users' table
@@ -63,7 +63,7 @@ q := NewSelect("users", "id", "name")
 q = q.WithFilter(UserFilter{IsActive: true})
 ```
 
-Use the **`String`** method to convert the **`SelectQuery`** struct to an actual SQL string:
+Use the `String` method to convert the `SelectQuery` struct to an actual SQL string:
 
 ```go
 sql := q.String()
