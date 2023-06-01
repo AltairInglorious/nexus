@@ -1,5 +1,12 @@
 # Nexus
 
+![Go](https://img.shields.io/github/go-mod/go-version/AltairInglorious/nexus?style=flat-square)
+![MIT](https://img.shields.io/github/license/AltairInglorious/nexus?style=flat-square)
+![Size](https://img.shields.io/github/languages/code-size/AltairInglorious/nexus?style=flat-square)
+![Size](https://img.shields.io/github/repo-size/AltairInglorious/nexus?style=flat-square)
+![Issues](https://img.shields.io/github/issues/AltairInglorious/nexus?style=flat-square)
+![Ver](https://img.shields.io/github/v/tag/AltairInglorious/nexus?style=flat-square)
+
 Nexus is a Golang utility package develop by TechLead of Adameus Technologies that helps to map your application models to the messaging system and integrate with a SurrealDB database. This package includes helper functions for handling NATS message brokering, error handling, efficient object pool management, and database interaction.
 
 ## NATS + SurrealDB
