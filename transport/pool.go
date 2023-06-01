@@ -33,6 +33,6 @@ func getValidatorFromPool() *validator.Validate {
 	return v
 }
 
-func returnValidatorToPool(v *validator.Validate) {
+func putValidatorToPool(v *validator.Validate) {
 	vdPool.Put(v)
 }

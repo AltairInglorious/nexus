@@ -91,9 +91,10 @@ func (t *Transport) Handle(e string, fn func(*nats.Msg) (any, int, error)) {
 }
 
 func MapperHandler[R, V any](dbFn func(*R) (V, error)) func(*nats.Msg) (any, int, error) {
-	validate := getValidatorFromPool()
-
 	return func(m *nats.Msg) (any, int, error) {
+		validate := getValidatorFromPool()
+		defer putValidatorToPool(validate)
+
 		var r R
 		if err := json.Unmarshal(m.Data, &r); err != nil {
 			return nil, 400, err
