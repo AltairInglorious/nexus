@@ -89,7 +89,7 @@ func (t *Transport) Handle(e string, fn func(*nats.Msg) (any, int, error)) {
 func MapperHandler[R, V any](dbFn func(*R) (V, error)) func(*nats.Msg) (any, int, error) {
 	return func(m *nats.Msg) (any, int, error) {
 		var r R
-		if m.Data != nil {
+		if m.Data != nil && len(m.Data) > 0 {
 			if err := json.Unmarshal(m.Data, &r); err != nil {
 				return nil, 400, err
 			}
