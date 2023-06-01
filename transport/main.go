@@ -89,11 +89,13 @@ func (t *Transport) Handle(e string, fn func(*nats.Msg) (any, int, error)) {
 func MapperHandler[R, V any](dbFn func(*R) (V, error)) func(*nats.Msg) (any, int, error) {
 	return func(m *nats.Msg) (any, int, error) {
 		var r R
-		if err := json.Unmarshal(m.Data, &r); err != nil {
-			return nil, 400, err
-		}
-		if err := validate.Struct(r); err != nil {
-			return nil, 400, err
+		if m.Data != nil {
+			if err := json.Unmarshal(m.Data, &r); err != nil {
+				return nil, 400, err
+			}
+			if err := validate.Struct(r); err != nil {
+				return nil, 400, err
+			}
 		}
 		v, err := dbFn(&r)
 		if err != nil {
