@@ -42,6 +42,9 @@ func NewSelect(t string, f ...string) SelectQuery {
 	}
 }
 func (s SelectQuery) WithFilter(f any) SelectQuery {
+	if f == nil {
+		return s
+	}
 	s.Filter = f
 	return s
 }
