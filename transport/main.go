@@ -120,7 +120,7 @@ func (t *Transport) Handle(e string, fn func(*nats.Msg) (any, int, error)) {
 // Returns: A function that takes a pointer to nats.Msg and returns a value of type any,
 // a status code of type int, and an error. This returned function serves as the handler
 // for processing the message broker data and mapping it to the database model.
-func MapperHandler[R, V any](dbFn func(*R) (V, error)) func(*nats.Msg) (any, int, error) {
+func MapperHandler[R, V any](dbFn func(*R) (V, error), emptyRequest bool) func(*nats.Msg) (any, int, error) {
 	return func(m *nats.Msg) (any, int, error) {
 		var r R
 		if m.Data != nil && len(m.Data) > 0 {
@@ -129,6 +129,10 @@ func MapperHandler[R, V any](dbFn func(*R) (V, error)) func(*nats.Msg) (any, int
 			}
 			if err := validate.Struct(r); err != nil {
 				return nil, 400, err
+			}
+		} else {
+			if !emptyRequest {
+				return nil, 400, fmt.Errorf("empty request")
 			}
 		}
 		v, err := dbFn(&r)
