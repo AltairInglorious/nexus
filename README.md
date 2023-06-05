@@ -105,7 +105,7 @@ This package uses a sync pool to manage NATSError and NATSOk structs, minimizing
 
 Use the below command to add this package to your Go project:
 
-`go get github.com/yourusername/go-nats-surrealdb-helper`
+`go get github.com/AltairInglorious/nexus`
 
 ## Contribution
 
