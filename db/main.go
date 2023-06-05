@@ -182,6 +182,43 @@ func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 	return p, nil
 }
 
+// GeneralSelectAny is a function that handles querying of records from the database in a generic way,
+// allowing for various data types in the result.
+// Unlike GeneralSelect, which returns a slice of records of a specific type T, GeneralSelectAny
+// returns a slice of maps with string keys and values of any type.
+// The function first checks if the query results are already present in the cache. If not, it executes
+// the query and stores the result in the cache.
+//
+// d: Pointer to the DB instance.
+// s: SelectQuery structure which encapsulates the SELECT query details.
+//
+// Returns a slice of map[string]any records or an error.
+func GeneralSelectAny(d *DB, s SelectQuery) ([]map[string]any, error) {
+	cv, err := d.getQueryFromCache(s)
+	if err == nil {
+		p, ok := cv.([]map[string]any)
+		if ok {
+			return p, nil
+		}
+	}
+
+	r, err := d.s.Query(s.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var p []map[string]any
+	ok, err := surrealdb.UnmarshalRaw(r, &p)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return []map[string]any{}, nil
+	}
+	d.putQueryToCache(s, p)
+	return p, nil
+}
+
 // GeneralUpdate is a function that updates an existing entry in the SurrealDB.
 // It takes the DB instance, the id of the object,
 // and a map of the data to be updated. If successful, it returns a pointer to the updated object;
