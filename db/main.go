@@ -96,6 +96,10 @@ func New(url, user, pass, ns, db string) (*DB, error) {
 	}, nil
 }
 
+func (d *DB) Close() {
+	d.s.Close()
+}
+
 func (d *DB) putQueryToCache(s SelectQuery, value any) {
 	d.c.Store(CacheKey{
 		TableName: s.TableName,
