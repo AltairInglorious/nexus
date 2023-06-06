@@ -296,7 +296,7 @@ func UseFilter(f interface{}, q string) string {
 			tagParts := strings.Split(tag, ",")
 			fln := tagParts[0]
 
-			if fln == "limit" {
+			if fln == "limit" || fln == "group" {
 				continue
 			}
 
@@ -313,6 +313,10 @@ func UseFilter(f interface{}, q string) string {
 
 	if len(w) > 0 {
 		q += " WHERE " + strings.Join(w, " AND ")
+	}
+
+	if fln := v.FieldByName("Group"); fln.IsValid() && !fln.IsNil() {
+		q += fmt.Sprintf(" GROUP BY %s", fln.Elem().Interface())
 	}
 
 	if fll := v.FieldByName("Limit"); fll.IsValid() && !fll.IsNil() {
