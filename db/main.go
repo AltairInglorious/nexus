@@ -246,13 +246,13 @@ func GeneralChange[T any](d *DB, id string, data map[string]interface{}) (*T, er
 	if err != nil {
 		return nil, err
 	}
-	p := make([]T, 1)
+	var p T
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
 	m := strings.Split(id, ":")
 	d.clearCache(m[0])
-	return &p[0], nil
+	return &p, nil
 }
 
 // GeneralDelete is a function that deletes an existing entry from the SurrealDB.
