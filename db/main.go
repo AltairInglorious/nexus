@@ -264,13 +264,13 @@ func GeneralDelete[T any](d *DB, id string) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
-	p := make([]T, 1)
+	var p T
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
 	m := strings.Split(id, ":")
 	d.clearCache(m[0])
-	return &p[0], nil
+	return &p, nil
 }
 
 // UseFilter takes an interface and a query string as input and adds WHERE and LIMIT clauses to the query
