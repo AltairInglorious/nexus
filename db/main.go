@@ -118,7 +118,7 @@ func (d *DB) getQueryFromCache(s SelectQuery) (any, error) {
 	return nil, fmt.Errorf("not found in cache")
 }
 
-func (d *DB) clearCache(t string) {
+func (d *DB) ClearCache(t string) {
 	d.c.Range(func(k, v interface{}) bool {
 		if k.(CacheKey).TableName == t {
 			d.c.Delete(k)
@@ -150,7 +150,7 @@ func GeneralCreate[T any](d *DB, thing string, data map[string]interface{}) (*T,
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	d.clearCache(thing)
+	d.ClearCache(thing)
 	return &p[0], nil
 }
 
@@ -237,7 +237,7 @@ func GeneralUpdate[T any](d *DB, id string, data map[string]interface{}) (*T, er
 		return nil, err
 	}
 	m := strings.Split(id, ":")
-	d.clearCache(m[0])
+	d.ClearCache(m[0])
 	return &p[0], nil
 }
 
@@ -255,7 +255,7 @@ func GeneralChange[T any](d *DB, id string, data map[string]interface{}) (*T, er
 		return nil, err
 	}
 	m := strings.Split(id, ":")
-	d.clearCache(m[0])
+	d.ClearCache(m[0])
 	return &p, nil
 }
 
@@ -273,7 +273,7 @@ func GeneralDelete[T any](d *DB, id string) (*T, error) {
 		return nil, err
 	}
 	m := strings.Split(id, ":")
-	d.clearCache(m[0])
+	d.ClearCache(m[0])
 	return &p, nil
 }
 
