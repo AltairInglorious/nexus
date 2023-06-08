@@ -127,6 +127,10 @@ func (d *DB) clearCache(t string) {
 	})
 }
 
+func (d *DB) GetSurrealDB() *surrealdb.DB {
+	return d.s
+}
+
 // GeneralCreate is a generic function that handles the creation of a new record in the database.
 // It takes a thing string which represents the table name, and a map of data for the record.
 // After successfully creating the record, it clears the relevant cache.
