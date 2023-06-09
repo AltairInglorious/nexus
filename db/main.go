@@ -300,7 +300,7 @@ func UseFilter(f interface{}, q string) string {
 			tagParts := strings.Split(tag, ",")
 			fln := tagParts[0]
 
-			if fln == "limit" || fln == "group" {
+			if fln == "limit" || fln == "group" || fln == "order" {
 				continue
 			}
 
@@ -321,6 +321,10 @@ func UseFilter(f interface{}, q string) string {
 
 	if fln := v.FieldByName("Group"); fln.IsValid() && !fln.IsNil() {
 		q += fmt.Sprintf(" GROUP BY %s", fln.Elem().Interface())
+	}
+
+	if fln := v.FieldByName("Order"); fln.IsValid() && !fln.IsNil() {
+		q += fmt.Sprintf(" ORDER BY %s", fln.Elem().Interface())
 	}
 
 	if fll := v.FieldByName("Limit"); fll.IsValid() && !fll.IsNil() {
