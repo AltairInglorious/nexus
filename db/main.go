@@ -127,6 +127,10 @@ func (d *DB) ClearCache(t string) {
 	})
 }
 
+func (d *DB) DropCache() {
+	d.c = sync.Map{}
+}
+
 func (d *DB) GetSurrealDB() *surrealdb.DB {
 	return d.s
 }
