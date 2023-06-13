@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"sync"
+
+	// "sync"
 
 	"github.com/surrealdb/surrealdb.go"
 )
@@ -66,7 +67,6 @@ func (s SelectQuery) WithFilter(f any) SelectQuery {
 // DB represents a wrapper over surrealdb.DB that includes a concurrent map for caching purposes.
 type DB struct {
 	s *surrealdb.DB
-	c sync.Map
 }
 
 // New is a function that creates a new instance of DB.
@@ -92,7 +92,6 @@ func New(url, user, pass, ns, db string) (*DB, error) {
 
 	return &DB{
 		s: s,
-		c: sync.Map{},
 	}, nil
 }
 
@@ -100,36 +99,36 @@ func (d *DB) Close() {
 	d.s.Close()
 }
 
-func (d *DB) putQueryToCache(s SelectQuery, value any) {
-	d.c.Store(CacheKey{
-		TableName: s.TableName,
-		Query:     s.String(),
-	}, value)
-}
+// func (d *DB) putQueryToCache(s SelectQuery, value any) {
+// 	d.c.Store(CacheKey{
+// 		TableName: s.TableName,
+// 		Query:     s.String(),
+// 	}, value)
+// }
 
-func (d *DB) getQueryFromCache(s SelectQuery) (any, error) {
-	if v, ok := d.c.Load(CacheKey{
-		TableName: s.TableName,
-		Query:     s.String(),
-	}); ok {
-		return v, nil
-	}
+// func (d *DB) getQueryFromCache(s SelectQuery) (any, error) {
+// 	if v, ok := d.c.Load(CacheKey{
+// 		TableName: s.TableName,
+// 		Query:     s.String(),
+// 	}); ok {
+// 		return v, nil
+// 	}
 
-	return nil, fmt.Errorf("not found in cache")
-}
+// 	return nil, fmt.Errorf("not found in cache")
+// }
 
-func (d *DB) ClearCache(t string) {
-	d.c.Range(func(k, v interface{}) bool {
-		if k.(CacheKey).TableName == t {
-			d.c.Delete(k)
-		}
-		return true
-	})
-}
+// func (d *DB) ClearCache(t string) {
+// 	d.c.Range(func(k, v interface{}) bool {
+// 		if k.(CacheKey).TableName == t {
+// 			d.c.Delete(k)
+// 		}
+// 		return true
+// 	})
+// }
 
-func (d *DB) DropCache() {
-	d.c = sync.Map{}
-}
+// func (d *DB) DropCache() {
+// 	d.c = sync.Map{}
+// }
 
 func (d *DB) GetSurrealDB() *surrealdb.DB {
 	return d.s
@@ -154,7 +153,7 @@ func GeneralCreate[T any](d *DB, thing string, data map[string]interface{}) (*T,
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	d.ClearCache(thing)
+	// d.ClearCache(thing)
 	return &p[0], nil
 }
 
@@ -165,13 +164,13 @@ func GeneralCreate[T any](d *DB, thing string, data map[string]interface{}) (*T,
 // s: SelectQuery structure which encapsulates the SELECT query details
 // Returns a slice of records of type T or an error.
 func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
-	cv, err := d.getQueryFromCache(s)
-	if err == nil {
-		p, ok := cv.([]T)
-		if ok {
-			return p, nil
-		}
-	}
+	// cv, err := d.getQueryFromCache(s)
+	// if err == nil {
+	// 	p, ok := cv.([]T)
+	// 	if ok {
+	// 		return p, nil
+	// 	}
+	// }
 
 	r, err := d.s.Query(s.String(), nil)
 	if err != nil {
@@ -186,7 +185,7 @@ func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 	if !ok {
 		return []T{}, nil
 	}
-	d.putQueryToCache(s, p)
+	// d.putQueryToCache(s, p)
 	return p, nil
 }
 
@@ -202,13 +201,13 @@ func GeneralSelect[T any](d *DB, s SelectQuery) ([]T, error) {
 //
 // Returns a slice of map[string]any records or an error.
 func GeneralSelectAny(d *DB, s SelectQuery) ([]map[string]any, error) {
-	cv, err := d.getQueryFromCache(s)
-	if err == nil {
-		p, ok := cv.([]map[string]any)
-		if ok {
-			return p, nil
-		}
-	}
+	// cv, err := d.getQueryFromCache(s)
+	// if err == nil {
+	// 	p, ok := cv.([]map[string]any)
+	// 	if ok {
+	// 		return p, nil
+	// 	}
+	// }
 
 	r, err := d.s.Query(s.String(), nil)
 	if err != nil {
@@ -223,7 +222,7 @@ func GeneralSelectAny(d *DB, s SelectQuery) ([]map[string]any, error) {
 	if !ok {
 		return []map[string]any{}, nil
 	}
-	d.putQueryToCache(s, p)
+	// d.putQueryToCache(s, p)
 	return p, nil
 }
 
@@ -240,8 +239,8 @@ func GeneralUpdate[T any](d *DB, id string, data map[string]interface{}) (*T, er
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	m := strings.Split(id, ":")
-	d.ClearCache(m[0])
+	// m := strings.Split(id, ":")
+	// d.ClearCache(m[0])
 	return &p[0], nil
 }
 
@@ -258,8 +257,8 @@ func GeneralChange[T any](d *DB, id string, data map[string]interface{}) (*T, er
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	m := strings.Split(id, ":")
-	d.ClearCache(m[0])
+	// m := strings.Split(id, ":")
+	// d.ClearCache(m[0])
 	return &p, nil
 }
 
@@ -276,8 +275,8 @@ func GeneralDelete[T any](d *DB, id string) (*T, error) {
 	if err = surrealdb.Unmarshal(pr, &p); err != nil {
 		return nil, err
 	}
-	m := strings.Split(id, ":")
-	d.ClearCache(m[0])
+	// m := strings.Split(id, ":")
+	// d.ClearCache(m[0])
 	return &p, nil
 }
 
